@@ -150,12 +150,23 @@ function DeskPane({ ctx }) {
                         style: { color: 'var(--ui-text-tertiary)' },
                         children: 'No conventional-commit types yet.',
                       }),
+                  git.subjects && git.subjects.length
+                    ? jsx('div', {
+                        style: {
+                          fontSize: 12,
+                          color: 'var(--ui-text-secondary)',
+                          lineHeight: 1.4,
+                        },
+                        children: git.subjects[0],
+                      })
+                    : null,
                   git.files && git.files.length
                     ? jsx('div', {
                         style: {
                           fontSize: 12,
                           color: 'var(--ui-text-tertiary)',
                           lineHeight: 1.45,
+                          whiteSpace: 'pre-wrap',
                         },
                         children: git.files.slice(0, 12).join('\n'),
                       })
@@ -210,19 +221,31 @@ function DeskPane({ ctx }) {
                   },
                   children: failure.command || '(no command)',
                 }),
+                failure.summary
+                  ? jsx('div', {
+                      style: {
+                        fontSize: 12,
+                        color: 'var(--ui-text-secondary)',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        lineHeight: 1.45,
+                      },
+                      children: failure.summary,
+                    })
+                  : null,
                 jsx('div', {
                   style: {
                     fontSize: 12,
-                    color: 'var(--ui-text-secondary)',
+                    color: 'var(--ui-text-tertiary)',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                     lineHeight: 1.45,
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
                   },
                   children:
-                    failure.summary ||
-                    (failure.lines && failure.lines.length
+                    failure.lines && failure.lines.length
                       ? failure.lines.join('\n')
-                      : 'No captured output.'),
+                      : 'Silent exit — no stdout captured.',
                 }),
                 jsx('button', {
                   type: 'button',
@@ -314,7 +337,7 @@ function DeskChip({ ctx }) {
 export default {
   id: 'debug-desk',
   name: 'Debug Desk',
-  defaultEnabled: false,
+  defaultEnabled: true,
   register(ctx) {
     ctx.register({
       id: 'pane',
@@ -328,6 +351,19 @@ export default {
       area: 'statusBar.right',
       order: 125,
       render: () => jsx(DeskChip, { ctx }),
+    })
+    ctx.register({
+      id: 'open',
+      area: 'palette',
+      title: 'Debug Desk',
+      subtitle: 'Today’s git digest and last terminal failure',
+      keywords: ['debug', 'desk', 'git', 'failure', 'terminal'],
+      onTrigger: () => {
+        host.notify({
+          kind: 'info',
+          message: 'Debug Desk is the right-hand pane. Check Capabilities → Plugins if it is hidden.',
+        })
+      },
     })
   },
 }

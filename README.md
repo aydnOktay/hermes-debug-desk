@@ -4,16 +4,25 @@ Hermes plugin: **today's git digest** plus the **last failed terminal command** 
 
 Does not watch VS Code, PowerShell, or any terminal outside Hermes.
 
+![Debug Desk pane — today's git digest and last terminal failure](assets/banner.png)
+
 ## Install
 
-From this folder (or a git remote later):
+```bash
+hermes plugins install https://github.com/aydnOktay/hermes-debug-desk.git
+hermes plugins enable debug-desk
+```
+
+Or from a local clone:
 
 ```bash
 hermes plugins install .
 hermes plugins enable debug-desk
 ```
 
-Restart the gateway. In Desktop: **Capabilities → Plugins** and enable **Debug Desk** (the UI half is a separate switch).
+Restart the gateway. The Desktop pane ships enabled (`defaultEnabled: true`). If you do not see it: **Capabilities → Plugins → Debug Desk**, then look at the right-hand pane and the `desk` status chip. Cmd/Ctrl+K → **Debug Desk** also works.
+
+Unified install copies `desktop/plugin.js` into `$HERMES_HOME/desktop-plugins/debug-desk/`. On Windows that is `%LOCALAPPDATA%\hermes\desktop-plugins\debug-desk\plugin.js`.
 
 Slash:
 

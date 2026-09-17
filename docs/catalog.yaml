@@ -1,0 +1,15 @@
+# Draft pin for a later PR to NousResearch/hermes-agent plugin-catalog/.
+# Image URL must stay SHA-pinned (not /main/). Fill `source` SHA after tagging.
+
+name: debug-desk
+version: "1.0.0"
+description: >
+  Today's git digest in the current repo, plus the last failed terminal
+  command the Hermes agent ran. Desktop pane, status chip, optional local LLM
+  summary. Does not watch OS or editor terminals.
+author: aydnOktay
+source: https://github.com/aydnOktay/hermes-debug-desk
+# source SHA filled after git tag v1.0.0
+image: https://raw.githubusercontent.com/aydnOktay/hermes-debug-desk/v1.0.0/assets/banner.png
+tags: [desktop, git, terminal, debug, tools]
+requires_hermes: ">=0.21"
