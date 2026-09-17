@@ -1,0 +1,23 @@
+name: debug-desk
+version: 1.0.0
+manifest_version: 2
+api_version: 1
+description: >
+  Developer desk for Hermes: today's git commits in the current repo, plus the
+  last failed terminal command the agent ran. Desktop pane and status chip;
+  optional local-LLM summary of the failure.
+author: aydnOktay
+license: MIT
+homepage: https://github.com/aydnOktay/hermes-debug-desk
+requires_hermes: ">=0.21"
+tags: [desktop, git, terminal, debug, tools]
+provides_tools:
+  - debug_daily_report
+  - debug_last_failure
+provides_hooks:
+  - post_tool_call
+config_schema:
+  debounce_seconds:
+    type: int
+    default: 120
+    description: Ignore repeat captures of the same failure within this window.
