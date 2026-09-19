@@ -7,7 +7,7 @@ import os
 from typing import Any
 
 import desk_context
-import store
+import desk_store
 
 
 def _dumps(payload: dict[str, Any]) -> str:
@@ -79,14 +79,14 @@ def summarize_failure(record: dict[str, Any] | None) -> dict[str, Any]:
             "note": "Model returned an empty summary.",
         }
 
-    updated = store.set_failure_summary(text) or record
+    updated = desk_store.set_failure_summary(text) or record
     return {"ok": True, "failure": updated, "summary": text, "llm": True}
 
 
 def debug_daily_report(args: dict, **kwargs) -> str:
     del kwargs
     try:
-        report = store.daily_git_report(_cwd_from(args or {}))
+        report = desk_store.daily_git_report(_cwd_from(args or {}))
         return _dumps(report)
     except Exception as exc:  # noqa: BLE001
         return _dumps({"ok": False, "error": str(exc)})
@@ -95,7 +95,7 @@ def debug_daily_report(args: dict, **kwargs) -> str:
 def debug_last_failure(args: dict, **kwargs) -> str:
     del kwargs
     try:
-        record = store.get_last_failure()
+        record = desk_store.get_last_failure()
         if not record:
             return _dumps({"ok": False, "error": "No captured terminal failure yet."})
         summarize = bool((args or {}).get("summarize"))
@@ -105,7 +105,7 @@ def debug_last_failure(args: dict, **kwargs) -> str:
             {
                 "ok": True,
                 "failure": record,
-                "fresh": store.failure_is_fresh(record),
+                "fresh": desk_store.failure_is_fresh(record),
             }
         )
     except Exception as exc:  # noqa: BLE001

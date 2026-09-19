@@ -6,13 +6,14 @@ import sys
 from pathlib import Path
 
 _DIR = str(Path(__file__).resolve().parent)
-if _DIR not in sys.path:
-    sys.path.append(_DIR)
+if _DIR in sys.path:
+    sys.path.remove(_DIR)
+sys.path.insert(0, _DIR)
 
 import desk_context
 import desk_hooks
+import desk_schemas
 import desk_tools
-import schemas
 
 
 def _handle_slash(ctx, raw_args: str) -> str:
@@ -37,13 +38,13 @@ def register(ctx) -> None:
     ctx.register_tool(
         name="debug_daily_report",
         toolset="debug_desk",
-        schema=schemas.DEBUG_DAILY_REPORT,
+        schema=desk_schemas.DEBUG_DAILY_REPORT,
         handler=desk_tools.debug_daily_report,
     )
     ctx.register_tool(
         name="debug_last_failure",
         toolset="debug_desk",
-        schema=schemas.DEBUG_LAST_FAILURE,
+        schema=desk_schemas.DEBUG_LAST_FAILURE,
         handler=desk_tools.debug_last_failure,
     )
     ctx.register_hook("post_tool_call", desk_hooks.on_post_tool_call)
