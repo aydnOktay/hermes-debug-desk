@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -142,8 +143,14 @@ def looks_like_failure(exit_code: int | None, output: str) -> bool:
 
 
 def failure_signature(command: str, exit_code: int | None, lines: list[str]) -> str:
+    """Debounce key for a failure; persisted to state.json, so it must not carry secrets.
+
+    ``lines`` are already redacted by :func:`last_lines`; the raw ``command`` is not,
+    so redact it here and hash the whole key instead of storing the plaintext.
+    """
     tail = lines[-1] if lines else ""
-    return f"{command}|{exit_code}|{tail}"
+    raw = f"{redact(command)}|{exit_code}|{tail}"
+    return hashlib.sha256(raw.encode("utf-8", "replace")).hexdigest()
 
 
 def within_seconds(iso_ts: str | None, seconds: int) -> bool:
