@@ -50,6 +50,22 @@ def test_failure_capture() -> None:
     assert any("AssertionError" in ln for ln in last["lines"])
 
 
+def test_failure_signature_holds_no_secret() -> None:
+    store.save_state({})
+    cmd = "curl -H 'Authorization: Bearer ghp_abcdefghijklmnopqrstuvwxyz0123' https://x"
+    payload = json.dumps({"command": cmd, "exit_code": 1, "output": "Error: 401 token=ghp_abcdefghijklmnopqrstuvwxyz0123"})
+    desk_hooks.on_post_tool_call("terminal", {"command": cmd}, payload)
+    persisted = store.state_path().read_text(encoding="utf-8")
+    assert "ghp_" not in persisted
+    assert "supersecret" not in persisted
+    last = store.get_last_failure()
+    assert last is not None
+    assert "ghp_" not in last["signature"]
+    # same failure again is still debounced under the redacted key
+    desk_hooks.on_post_tool_call("terminal", {"command": cmd}, payload)
+    assert store.get_last_failure()["repeat_count"] == 2
+
+
 def test_ignore_success() -> None:
     store.save_state({})
     desk_hooks.on_post_tool_call(
